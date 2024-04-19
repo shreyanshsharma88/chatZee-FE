@@ -1,15 +1,30 @@
+import React from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
 
-export const SocketContext = createContext({
+
+interface IMessage {
+  userId: string;
+  groupId: string;
+  message: string;
+  userName: string
+}
+interface ISocketContext {
+  socket: WebSocket | null;
+  messages: IMessage[] | null;
+  setMessages: (m: any[]) => void;
+
+}
+
+export const SocketContext = createContext<ISocketContext>({
   socket: null,
   messages: [],
   setMessages: () => {},
 });
 
 export const SocketProvider = () => {
-  const [messages, setMessages] = useState(null);
-  const [socket, setSocket] = useState(null);
+  const [messages, setMessages] = useState<IMessage[] | null>(null);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
   const { userId, groupId } = useParams();
 
   useEffect(() => {
@@ -33,7 +48,7 @@ export const SocketProvider = () => {
     ws.addEventListener("open", onSocketOpen);
     ws.addEventListener("message", (m) => onNewMessage(m));
     ws.addEventListener("close", onClose);
-    ws.on;
+    // ws.on;
   }, [userId, groupId]);
   const value = useMemo(
     () => ({

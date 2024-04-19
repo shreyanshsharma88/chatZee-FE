@@ -1,17 +1,19 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
-import "./App.css";
 import { Box, IconButton, Stack, TextField, Typography } from "@mui/material";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ArrowBack, Send } from "@mui/icons-material";
-import { useSocketProvider } from "./providers/SocketProvider";
+import { useSocketProvider } from "../providers";
+import React from "react";
 
 const NavBar = () => {
   const navigate = useNavigate();
-  const onBack = () => navigate(-1);
+  const onBack = () => {
+    navigate(-1);
+  };
   return (
     <Stack p={2} width="100%" direction="row">
-      <IconButton onClick={onBack} alignSelf="start">
+      <IconButton onClick={onBack} sx={{ alignSelf: "start" }}>
         <ArrowBack />
       </IconButton>
     </Stack>
@@ -19,9 +21,9 @@ const NavBar = () => {
 };
 
 export const Chat = () => {
-  const [currMessage, setCurrMessage] = useState();
+  const [currMessage, setCurrMessage] = useState<string>("");
   const [searchParams, _] = useSearchParams();
-  const {userId} = useParams();
+  const { userId } = useParams();
   const userName = searchParams.get("userName");
   const { socket, messages } = useSocketProvider();
 
@@ -33,7 +35,7 @@ export const Chat = () => {
         userId: userId,
         send: true,
       });
-      console.log(res)
+      console.log(res);
       socket.send(res);
       setCurrMessage("");
     }
@@ -63,12 +65,12 @@ export const Chat = () => {
       >
         {messages?.map((m, index) => {
           if (!m) return null;
-          const isSameUser = m.userData.userName === userName;
+          const isSameUser = m.userName === userName;
           return (
             <Box
               borderRadius={5}
               mt={1}
-              bgcolor={isSameUser ? "info.main" : m.userData.colour}
+              bgcolor={isSameUser ? "info.main" : "grey"}
               key={index}
               p={1}
               maxWidth={300}
@@ -94,12 +96,12 @@ export const Chat = () => {
           sx={{ flex: 1 }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              setCurrMessage(e.target.value);
+              // setCurrMessage(e.target.);
               handleClick();
             }
           }}
         />
-        <IconButton disableRipple onClick={handleClick} variant="contained">
+        <IconButton disableRipple onClick={handleClick} >
           <Send color="info" />
         </IconButton>
       </Stack>

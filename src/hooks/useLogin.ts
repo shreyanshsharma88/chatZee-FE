@@ -3,7 +3,7 @@ import { useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 
 export const useLogin =  () => {
-    const [value, setValue] = useState()
+    const [value, setValue] = useState<string>('')
     const [_, setSearchParams] = useSearchParams()
     const navigate = useNavigate()
 

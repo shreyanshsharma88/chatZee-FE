@@ -9,15 +9,17 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { useLandingPage } from "./hooks/useLandingPage";
 import { useNavigate, useParams } from "react-router-dom";
+import React from "react";
+import { useLandingPage } from "../hooks";
+import { IAddGroupProps, IGroupProps } from "../types";
 
 export const LandingPage = () => {
   const { currentUsers, addGroup, currentGroups, addUserToGroup } =
     useLandingPage();
   const navigate = useNavigate();
-  const [isJoiningGroups, setIsJoiningGroups] = useState(false);
-  const [isAddingGroup, setIsAddingGroup] = useState(false);
+  const [isJoiningGroups, setIsJoiningGroups] = useState<boolean>(false);
+  const [isAddingGroup, setIsAddingGroup] = useState<boolean>(false);
   const { userId } = useParams();
   const handleJoinGroupsClose = () => {
     setIsJoiningGroups(false);
@@ -33,7 +35,7 @@ export const LandingPage = () => {
       <Groups
         open={isJoiningGroups}
         handleClose={handleJoinGroupsClose}
-        currentGroups={currentGroups}
+        currentGroups={currentGroups ?? []}
         addUserToGroup={addUserToGroup}
       />
       <AddGroup
@@ -41,7 +43,6 @@ export const LandingPage = () => {
         handleClose={handleCloseAddGroup}
         addGroup={addGroup}
       />
-
 
       <Stack direction="column" gap={2} width={"60%"}>
         <Button onClick={handleAddGroup} variant="contained">
@@ -71,9 +72,8 @@ export const LandingPage = () => {
                 onClick={() => {
                   if (user.isDmExisting) {
                     navigate(`/${userId}/${user.dmID}`);
-                  }
-                  else {
-                    addGroup('DM CHAT' , true , user.id )
+                  } else {
+                    addGroup("DM CHAT", true, user.id);
                     navigate(`/${userId}/${user.dmID}`);
                   }
                 }}
@@ -86,7 +86,12 @@ export const LandingPage = () => {
   );
 };
 
-const Groups = ({ open, handleClose, currentGroups, addUserToGroup }) => {
+const Groups = ({
+  open,
+  handleClose,
+  currentGroups,
+  addUserToGroup,
+}: IGroupProps) => {
   return (
     <Drawer
       anchor="right"
@@ -122,11 +127,11 @@ const Groups = ({ open, handleClose, currentGroups, addUserToGroup }) => {
   );
 };
 
-const AddGroup = ({ open, handleClose, addGroup }) => {
-  const [groupName, setGroupName] = useState();
+const AddGroup = ({ open, handleClose, addGroup }: IAddGroupProps) => {
+  const [groupName, setGroupName] = useState<string>("");
   const handleAdd = () => {
     if (!groupName) return;
-    addGroup(groupName , false, null);
+    addGroup(groupName, false, null);
     handleClose();
   };
   return (

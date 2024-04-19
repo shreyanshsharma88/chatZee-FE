@@ -2,12 +2,11 @@
 import "./App.css";
 import { Button, Container, Stack, TextField } from "@mui/material";
 import { Route, Routes, useSearchParams } from "react-router-dom";
-import { Chat } from "./Chat";
-import { LandingPage } from "./LandingPage";
 import { useLogin } from "./hooks/useLogin";
-import { GroupContainer } from "./Group";
 import { SocketProvider } from "./providers/SocketProvider";
 import { useEffect } from "react";
+import React from "react";
+import { GroupContainer, LandingPage } from "./components";
 
 const Login = () => {
   const { addUser, setValue, value } = useLogin();
