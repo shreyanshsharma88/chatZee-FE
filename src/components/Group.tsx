@@ -8,13 +8,15 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useGroup } from "./hooks/useGroup";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowBack, Group, Send } from "@mui/icons-material";
 import { useState } from "react";
-import { useSocketProvider } from "./providers/SocketProvider";
+import { useSocketProvider } from "../providers";
+import React from "react";
+import { useGroup } from "../hooks";
+import { IMemberProps } from "../types";
 
-const NavBar = ({ name }) => {
+const NavBar = ({ name }: { name: string }) => {
   const navigate = useNavigate();
   const onBack = () => navigate(-1);
   return (
@@ -25,7 +27,7 @@ const NavBar = ({ name }) => {
       alignItems="center"
       justifyContent="space-between"
     >
-      <IconButton onClick={onBack} alignSelf="start">
+      <IconButton onClick={onBack} sx={{ alignSelf: "start" }}>
         <ArrowBack />
       </IconButton>
       <Typography variant="h4">{name}</Typography>
@@ -34,7 +36,7 @@ const NavBar = ({ name }) => {
 };
 export const GroupContainer = () => {
   const { groupDetails } = useGroup();
-  const [currMessage, setCurrMessage] = useState();
+  const [currMessage, setCurrMessage] = useState<string>("");
   const { socket, messages } = useSocketProvider();
   const { userId, groupId } = useParams();
   const [showMembers, setShowMembers] = useState(false);
@@ -74,7 +76,7 @@ export const GroupContainer = () => {
         display="flex"
         justifyContent="center"
       >
-        <NavBar name={groupDetails?.groupName} />
+        <NavBar name={groupDetails?.groupName ?? 'Group'} />
       </Box>
       <Stack
         direction="column"
@@ -110,7 +112,12 @@ export const GroupContainer = () => {
               />
 
               {!isSameUser && (
-                <Typography fontStyle='italic' color='grey' alignSelf="start" variant="caption">
+                <Typography
+                  fontStyle="italic"
+                  color="grey"
+                  alignSelf="start"
+                  variant="caption"
+                >
                   By-{m.userName}
                 </Typography>
               )}
@@ -126,11 +133,7 @@ export const GroupContainer = () => {
         left={50}
         right={50}
       >
-        <IconButton
-          onClick={handleShowMembers}
-          disableRipple
-          variant="contained"
-        >
+        <IconButton onClick={handleShowMembers} disableRipple>
           <Group color="error" />
         </IconButton>
 
@@ -140,12 +143,12 @@ export const GroupContainer = () => {
           sx={{ flex: 1 }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              setCurrMessage(e.target.value);
+              // setCurrMessage(e.target.value);
               handleClick();
             }
           }}
         />
-        <IconButton disableRipple onClick={handleClick} variant="contained">
+        <IconButton disableRipple onClick={handleClick}>
           <Send color="info" />
         </IconButton>
       </Stack>
@@ -153,7 +156,7 @@ export const GroupContainer = () => {
   );
 };
 
-const Members = ({ open, handleClose, members }) => {
+const Members = ({ open, handleClose, members }: IMemberProps) => {
   return (
     <Drawer
       open={open}
