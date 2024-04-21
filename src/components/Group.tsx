@@ -14,7 +14,7 @@ import { useState } from "react";
 import { useSocketProvider } from "../providers";
 import React from "react";
 import { useGroup } from "../hooks";
-import { IMemberProps } from "../types";
+import { IMemberProps } from "../utils";
 
 const NavBar = ({ name }: { name: string }) => {
   const navigate = useNavigate();

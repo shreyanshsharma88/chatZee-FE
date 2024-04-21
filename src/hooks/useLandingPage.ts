@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ICurrentGroups, ICurrentUsers } from "../types";
+import { ICurrentGroups, ICurrentUsers } from "../utils";
 
 export const useLandingPage = () => {
   const [currentUsers, setCurrentUsers] = useState<ICurrentUsers[] | null>(

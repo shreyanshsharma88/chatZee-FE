@@ -1,28 +1,24 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSocketProvider } from "../providers/SocketProvider";
-import { IGroupDetails } from "../types";
+import { BASE_URL, IGroupDetails } from "../utils";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export const useGroup = () => {
   const { setMessages } = useSocketProvider();
   const [groupDetails, setGroupDetails] = useState<IGroupDetails | null>(null);
   const { groupId } = useParams();
-  const getGroupMembers = async () => {
-    const response = await fetch(
-      `http://localhost:8080/getGroupDetails/${groupId}`,
+
+  const getGroupMembers = useQuery( [groupId] , () => {
+
+    return axios.get(`${BASE_URL}/getGroupDetails/${groupId}`),
       {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const data = await response.json();
-    setGroupDetails(data);
-    setMessages(data.chat);
-  };
-  useEffect(() => {
-    getGroupMembers();
-  }, [groupId]);
+        onSuccess: (res) => {
+          setGroupDetails(res.data);
+          setMessages(res.data.chat);
+        }
+      };
+  });
   return { groupDetails };
 };

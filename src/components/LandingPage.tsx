@@ -12,7 +12,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import React from "react";
 import { useLandingPage } from "../hooks";
-import { IAddGroupProps, IGroupProps } from "../types";
+import { IAddGroupProps, IGroupProps } from "../utils";
 
 export const LandingPage = () => {
   const { currentUsers, addGroup, currentGroups, addUserToGroup } =
