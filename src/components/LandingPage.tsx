@@ -2,8 +2,10 @@
 import {
   Button,
   Chip,
+  Collapse,
   Dialog,
   Drawer,
+  IconButton,
   Stack,
   TextField,
   Typography,
@@ -12,7 +14,13 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import React from "react";
 import { useLandingPage } from "../hooks";
-import { IAddGroupProps, IGroupProps } from "../utils";
+import {
+  IAddGroupProps,
+  ICurrentGroups,
+  ICurrentUsers,
+  IGroupProps,
+} from "../utils";
+import { ArrowDropDown, ArrowDropUp } from "@mui/icons-material";
 
 export const LandingPage = () => {
   const { currentUsers, addGroup, currentGroups, addUserToGroup } =
@@ -44,7 +52,7 @@ export const LandingPage = () => {
         addGroup={addGroup}
       />
 
-      <Stack direction="column" gap={2} width={"60%"}>
+      {/* <Stack direction="column" gap={2} width={"60%"}>
         <Button onClick={handleAddGroup} variant="contained">
           Create Group
         </Button>
@@ -52,36 +60,11 @@ export const LandingPage = () => {
           Join Group
         </Button>
       </Stack>
-      <Stack direction="column" gap={2} width="50%">
-        <Typography variant="h6">CURRENT USERS</Typography>
-        <Stack direction="column" gap={1}>
-          {currentUsers?.map((user) => {
-            if (!user) return;
-            return (
-              <Chip
-                color="success"
-                sx={{
-                  p: 2.5,
-                  transition: "transform 0.3s ease",
-                  "&:hover": {
-                    transform: "scale(1.2)",
-                  },
-                }}
-                label={user.name}
-                key={user.id}
-                onClick={() => {
-                  if (user.isDmExisting) {
-                    navigate(`/${userId}/${user.dmID}`);
-                  } else {
-                    addGroup("DM CHAT", true, user.id);
-                    navigate(`/${userId}/${user.dmID}`);
-                  }
-                }}
-              />
-            );
-          })}
-        </Stack>
-      </Stack>
+       */}
+      <UserAndGroupsDrawer
+        users={currentUsers ?? []}
+        groups={currentGroups ?? []}
+      />
     </Stack>
   );
 };
@@ -156,3 +139,41 @@ const AddGroup = ({ open, handleClose, addGroup }: IAddGroupProps) => {
     </Dialog>
   );
 };
+
+const UserAndGroupsDrawer = ({ groups, users }: IUserAndGroupsDrawerProps) => {
+  const [groupsOpen, setGroupsOpen] = useState(false);
+  const [usersOpen, setUsersOpen] = useState(false);
+  return (
+    <Stack direction="column" p={2} gap={2}>
+      <Stack alignItems='center' direction="row" justifyContent="space-between">
+        <Typography variant="h6">Active Groups</Typography>
+        <IconButton sx={{p:0}} onClick={() => setGroupsOpen((p) => !p)}>
+          {!groupsOpen ? <ArrowDropDown /> : <ArrowDropUp />}
+        </IconButton>
+      </Stack>
+      <Collapse in={groupsOpen}>
+        {groups.map((group) => {
+          return (
+            <Chip
+              label={group.groupName}
+              key={group.id}
+              color="info"
+              sx={{
+                p: 2.5,
+                transition: "transform 0.3s ease",
+                "&:hover": {
+                  transform: "scale(1.1)",
+                },
+              }}
+            />
+          );
+        })}
+      </Collapse>
+    </Stack>
+  );
+};
+
+interface IUserAndGroupsDrawerProps {
+  groups: ICurrentGroups[];
+  users: ICurrentUsers[];
+}

@@ -36,10 +36,13 @@ const NavBar = ({ name }: { name: string }) => {
 };
 export const GroupContainer = () => {
   const { groupDetails } = useGroup();
+
   const [currMessage, setCurrMessage] = useState<string>("");
   const { socket, messages } = useSocketProvider();
   const { userId, groupId } = useParams();
   const [showMembers, setShowMembers] = useState(false);
+
+  console.log({ groupDetails });
 
   const handleClick = () => {
     if (!currMessage) return;
@@ -49,13 +52,11 @@ export const GroupContainer = () => {
         message: currMessage,
         userId: userId,
       });
-      console.log(res);
       socket.send(res);
       setCurrMessage("");
     }
   };
   const handleShowMembers = () => setShowMembers(true);
-  console.log({ messages });
   return (
     <Stack
       width="100%"
@@ -76,7 +77,7 @@ export const GroupContainer = () => {
         display="flex"
         justifyContent="center"
       >
-        <NavBar name={groupDetails?.groupName ?? 'Group'} />
+        <NavBar name={groupDetails?.groupName ?? "Group"} />
       </Box>
       <Stack
         direction="column"
@@ -90,9 +91,9 @@ export const GroupContainer = () => {
         }}
         width="100%"
       >
-        {messages?.map((m, index) => {
+        {groupDetails?.chat?.concat(messages ?? [])?.map((m, index) => {
           if (!m) return null;
-          const isSameUser = m.userId === userId;
+          const isSameUser = m?.userId === userId;
           return (
             <Stack
               alignSelf={isSameUser ? "flex-end" : "flex-start"}

@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 import { Stack } from "@mui/material";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import { GroupContainer, LandingPage, Login } from "./components";
 import { AppThemeProvider } from "./providers";
 import { SocketProvider } from "./providers/SocketProvider";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 function App() {
   const queryClient = new QueryClient();

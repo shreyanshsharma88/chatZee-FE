@@ -2,3 +2,4 @@
 export * from './useGroup'
 export * from './useLandingPage'
 export * from './useLogin'
+export * from './useViewPort'
