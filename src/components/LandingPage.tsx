@@ -61,10 +61,10 @@ export const LandingPage = () => {
         </Button>
       </Stack>
        */}
-      <UserAndGroupsDrawer
+      {/* <UserAndGroupsDrawer
         users={currentUsers ?? []}
         groups={currentGroups ?? []}
-      />
+      /> */}
     </Stack>
   );
 };

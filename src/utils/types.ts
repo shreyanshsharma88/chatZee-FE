@@ -8,6 +8,7 @@ export interface ICurrentUsers {
 export interface ICurrentGroups {
   groupName: string;
   id: string;
+  alreadyExists: boolean;
 }
 
 export interface IGroupDetails {
