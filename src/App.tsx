@@ -1,15 +1,16 @@
 /* eslint-disable no-unused-vars */
-import { Container, Stack } from "@mui/material";
+import { Container, Stack, Typography } from "@mui/material";
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import { GroupContainer, LandingPage, Login } from "./components";
+import { Chat, Login } from "./components";
 import { AppThemeProvider } from "./providers";
 import { SocketProvider } from "./providers/SocketProvider";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { Layout } from "./layout";
+import { Layout } from "./components";
 
 function App() {
   const queryClient = new QueryClient();
+
   return (
     <QueryClientProvider client={queryClient}>
       <AppThemeProvider>
@@ -38,8 +39,8 @@ function App() {
             <Route path="" element={<Login />} />
             <Route element={<Layout />}>
               <Route element={<SocketProvider />}>
-                <Route path="/:userId" element={<LandingPage />} />
-                <Route path="/:userId/:groupId" element={<GroupContainer />} />
+                <Route path="/:userId" />
+                <Route path="/:userId/:groupId" element={<Chat />} />
               </Route>
             </Route>
           </Routes>

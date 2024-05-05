@@ -1,19 +1,16 @@
-import React from "react";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
-
 
 interface IMessage {
   userId: string;
   groupId: string;
   message: string;
-  userName: string
+  userName: string;
 }
 interface ISocketContext {
   socket: WebSocket | null;
   messages: IMessage[] | null;
   setMessages: (m: any[]) => void;
-
 }
 
 export const SocketContext = createContext<ISocketContext>({

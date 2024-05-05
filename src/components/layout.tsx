@@ -1,18 +1,19 @@
-import { FC, PropsWithChildren, useState } from "react";
-import { Outlet, useSearchParams } from "react-router-dom";
-import { useLandingPage, useViewPort } from "./hooks";
+import { Add, Chat } from "@mui/icons-material";
 import {
   Button,
   Chip,
+  Container,
   Dialog,
   IconButton,
   Stack,
   TextField,
   Typography,
+  useTheme,
 } from "@mui/material";
-import React from "react";
-import { Add, Chat } from "@mui/icons-material";
-import { IAddGroupProps } from "./utils";
+import React, { FC, PropsWithChildren, useState } from "react";
+import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
+import { useLandingPage, useViewPort } from "../hooks";
+import { IAddGroupProps } from "../utils";
 
 const Navbar = () => {
   const [searchParam] = useSearchParams();
@@ -35,7 +36,8 @@ const Navbar = () => {
 };
 
 const SideBar = () => {
-  const { currentGroups, currentUsers, addUserToGroup, addGroup } = useLandingPage();
+  const { currentGroups, currentUsers, addUserToGroup, addGroup } =
+    useLandingPage();
   const [searchParam, setSearchParams] = useSearchParams();
   const handleOpenAddGroupDialog = () => {
     const params = new URLSearchParams(searchParam);
@@ -47,6 +49,7 @@ const SideBar = () => {
     params.delete("addGroup");
     setSearchParams(params);
   };
+  const navigate = useNavigate();
   return (
     <Stack
       p={2}
@@ -103,16 +106,15 @@ const SideBar = () => {
         {currentGroups?.map((group) => {
           if (!group) return null;
           return (
-            <Chip
-              label={group.groupName}
+            <GroupCard
               key={group.id}
-              color="info"
-              sx={{
-                p: 2.5,
-                transition: "transform 0.3s ease",
-                "&:hover": {
-                  transform: "scale(1.1)",
-                },
+              name={group.groupName}
+              alreadyExist={group.alreadyExists}
+              action={() => {
+                if (group.alreadyExists) {
+                  navigate(`/${group.id}`, { replace: false });
+                }
+                addUserToGroup(group.id);
               }}
             />
           );
@@ -122,13 +124,61 @@ const SideBar = () => {
   );
 };
 
+const GroupCard = ({
+  name,
+  alreadyExist,
+  action,
+}: {
+  name: string;
+  alreadyExist: boolean;
+  action: () => void;
+}) => {
+  const theme = useTheme();
+  return (
+    <Stack
+      p={2}
+      borderRadius={3}
+      width={"100%"}
+      direction={"row"}
+      justifyContent={"space-between"}
+      bgcolor={"secondary.dark"}
+      textAlign={"center"}
+    >
+      <Typography fontWeight={700} variant="body1">
+        {name}
+      </Typography>
+      <IconButton
+        sx={{ backgroundColor: theme.palette.error.main, color: "white" }}
+        onClick={action}
+      >
+        {alreadyExist ? <Chat /> : <Add />}
+      </IconButton>
+    </Stack>
+  );
+};
+
 export const Layout: FC<PropsWithChildren> = () => {
   const { isMobile } = useViewPort();
+  const theme = useTheme();
   return (
     <Stack width="100%" height="100%">
       <Navbar />
-      <SideBar />
-      <Outlet />
+      <Stack direction="row" height="100%" width={"100%"}>
+        <SideBar />
+        <Container
+          sx={{
+            justifySelf: "center",
+            width: "60%",
+            height: "80%",
+            alignSelf: "center",
+            borderRadius: 10,
+            backgroundColor: theme.palette.secondary.main,
+            border: "1px solid",
+          }}
+        >
+          <Outlet />
+        </Container>
+      </Stack>
     </Stack>
   );
 };

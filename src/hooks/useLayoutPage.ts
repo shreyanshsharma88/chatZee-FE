@@ -23,7 +23,7 @@ export const useLandingPage = () => {
   };
 
   const getGroups = async () => {
-    const response = await fetch("http://localhost:8080/getGroups", {
+    const response = await fetch(`http://localhost:8080/getGroups/${userId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
