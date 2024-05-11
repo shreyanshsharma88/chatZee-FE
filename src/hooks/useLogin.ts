@@ -1,25 +1,28 @@
 /* eslint-disable no-unused-vars */
-import { useState } from "react"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import axios, { AxiosResponse } from "axios";
+import { useState } from "react";
+import { useMutation } from "react-query";
+import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../utils";
 
 export const useLogin =  () => {
     const [value, setValue] = useState<string>('')
-    const [_, setSearchParams] = useSearchParams()
     const navigate = useNavigate()
 
-    const addUser =  async() =>{
-        const response = await fetch ('http://localhost:8080/login',{
-            method: 'POST',
-            headers:{
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({userName: value})
-                
-            
-        })
-        const result = await response.json();
-        navigate(`/${result.id}?userName=${value}`)
-    }
+    const addUserApi = useMutation(
+        ["addUser"],
+        (data: { userName: string }) =>
+          axios.post(`${BASE_URL}/login`, data),
+        {
+          onSuccess: (data: AxiosResponse) => {
+            navigate(`/${data.data.id}?userName=${value}`)
+          },
+        }
+      );
+      const addUser = () => {
+        addUserApi.mutate({ userName: value });
+      }
+    
   
 
     return {value, setValue , addUser}

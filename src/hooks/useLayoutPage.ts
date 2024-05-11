@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ICurrentGroups, ICurrentUsers } from "../utils";
+import { BASE_URL, ICurrentGroups, ICurrentUsers } from "../utils";
+import { useMutation, useQuery } from "react-query";
+import axios from "axios";
 
 export const useLandingPage = () => {
   const [currentUsers, setCurrentUsers] = useState<ICurrentUsers[] | null>(
@@ -11,59 +13,67 @@ export const useLandingPage = () => {
   );
   const navigate = useNavigate();
   const { userId } = useParams();
-  const getUsers = async () => {
-    const response = await fetch(`http://localhost:8080/users/${userId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
+  const getUsers = useQuery(
+    ["users", userId],
+    () => axios.get(`${BASE_URL}/users/${userId}`),
+    {
+      onSuccess: (data) => {
+        setCurrentUsers(data.data);
       },
-    });
-    const data = await response.json();
-    setCurrentUsers(data);
-  };
-
-  const getGroups = async () => {
-    const response = await fetch(`http://localhost:8080/getGroups/${userId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
+    }
+  );
+  const getGroups = useQuery(
+    ["groups", userId],
+    () => axios.get(`${BASE_URL}/getGroups/${userId}`),
+    {
+      onSuccess: (data) => {
+        setCurrentGroups(data.data);
       },
-    });
-    const data = await response.json();
-    setCurrentGroups(data);
-  };
+    }
+  );
 
-  useEffect(() => {
-    getGroups();
-    getUsers();
-  }, []);
-
-  const addGroup = async (
+  const addGroupApi = useMutation(
+    ["addGroup"],
+    (data: {
+      groupName: string;
+      isDm: boolean;
+      uniqueId2: string | null;
+      uniqueId: string;
+    }) => axios.post(`${BASE_URL}/addGroup`, data),
+    {
+      onSuccess: (res, payload) => {
+        getGroups.refetch();
+        if (payload.isDm) {
+          
+        }
+      },
+    }
+  );
+  const addGroup = (
     groupName: string,
-    isDm?: boolean,
-    uniqueId2?: string | null
+    isDm: boolean,
+    uniqueId2: string | null,
+    uniqueId: string
   ) => {
-    const response = await fetch("http://localhost:8080/addGroup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ groupName, uniqueId: userId, isDm, uniqueId2 }),
-    });
-    const res = await response.json();
-    getGroups();
+    addGroupApi.mutate({ groupName, isDm, uniqueId2, uniqueId });
+  };
+  const addUserToGroupApi = useMutation(
+    ["addUserToGroup"],
+    (data: { groupId: string; userId: string }) =>
+      axios.post(`${BASE_URL}/addUserToGroup`, data)
+  );
 
-    console.log(res);
+  const addUserToGroup = (groupId: string) => {
+    addUserToGroupApi.mutate(
+      { groupId, userId: userId ?? "" },
+      {
+        onSuccess: () => {
+          getGroups.refetch();
+          navigate(`/${userId}/${groupId}`, { replace: false });
+        },
+      }
+    );
   };
 
-  const addUserToGroup = async (groupId: string) => {
-    fetch("http://localhost:8080/addUserToGroup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ groupId, userId }),
-    }).then(() => navigate(`/${userId}/${groupId}`));
-  };
   return { currentUsers, addGroup, currentGroups, addUserToGroup };
 };

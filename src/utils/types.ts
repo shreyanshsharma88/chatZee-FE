@@ -33,6 +33,6 @@ export interface IMemberProps {
 export interface IAddGroupProps {
     open: boolean;
     handleClose: () => void;
-    addGroup: (groupName: string, isDm: boolean, uniqueId2: string | null) => void;
+    addGroup: (groupName: string, isDm: boolean, uniqueId2: string | null,  uniqueId: string) => void ;
 }
 

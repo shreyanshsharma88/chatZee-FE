@@ -32,7 +32,13 @@ export const Chat = () => {
   };
   return (
     <Stack p={4} height="100%" direction="column" gap={2}>
-      <Stack height="90%" width={"100%"} direction="column">
+      <Stack height="90%" width={"100%"} direction="column" sx={{
+        overflowY: "scroll",
+        scrollbarWidth: "none",
+        "&::-webkit-scrollbar": {
+          display: "none",
+        },
+      }}>
         {groupDetails?.chat?.concat(messages ?? [])?.map((m, index) => {
           if (!m) return null;
           const isSameUser = m?.userId === userId;

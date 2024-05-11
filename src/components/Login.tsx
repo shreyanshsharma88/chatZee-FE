@@ -8,7 +8,7 @@ export const Login = () => {
     <Stack direction="column" gap={2}>
       <TextField value={value} onChange={(e) => setValue(e.target.value)} />
       <Button onClick={addUser} variant="contained">
-        Login
+        Join
       </Button>
     </Stack>
   );

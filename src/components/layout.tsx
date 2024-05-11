@@ -1,5 +1,6 @@
 import { Add, Chat } from "@mui/icons-material";
 import {
+  Box,
   Button,
   Chip,
   Container,
@@ -10,8 +11,13 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import React, { FC, PropsWithChildren, useState } from "react";
-import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
+import React, { FC, PropsWithChildren, useId, useState } from "react";
+import {
+  Outlet,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { useLandingPage, useViewPort } from "../hooks";
 import { IAddGroupProps } from "../utils";
 
@@ -50,6 +56,24 @@ const SideBar = () => {
     setSearchParams(params);
   };
   const navigate = useNavigate();
+  const { userId } = useParams();
+
+  const handleUserClick = ({
+    isDmExisting,
+    groupId,
+    uniqueId2,
+  }: {
+    isDmExisting: boolean;
+    groupId: string;
+    uniqueId2: string;
+  }) => {
+    if (isDmExisting) {
+      navigate(`/${userId}/${groupId}`,{replace : false});
+      return;
+    }
+    addGroup(`${userId}**${uniqueId2}`, true, uniqueId2, userId || "");
+  };
+  const { groupId } = useParams();
   return (
     <Stack
       p={2}
@@ -88,9 +112,17 @@ const SideBar = () => {
               label={user.name}
               key={user.id}
               color="info"
+              onClick={() =>
+                handleUserClick({
+                  isDmExisting: user.isDmExisting,
+                  groupId: user.dmID,
+                  uniqueId2: user.id,
+                })
+              }
               sx={{
                 p: 2.5,
                 transition: "transform 0.3s ease",
+                scale: user.dmID === groupId ? 1.1 : 1,
                 "&:hover": {
                   transform: "scale(1.1)",
                 },
@@ -106,17 +138,18 @@ const SideBar = () => {
         {currentGroups?.map((group) => {
           if (!group) return null;
           return (
-            <GroupCard
-              key={group.id}
-              name={group.groupName}
-              alreadyExist={group.alreadyExists}
-              action={() => {
-                if (group.alreadyExists) {
-                  navigate(`/${group.id}`, { replace: false });
-                }
-                addUserToGroup(group.id);
-              }}
-            />
+            <Box key={group.id} >
+              <GroupCard
+                name={group.groupName}
+                alreadyExist={group.alreadyExists}
+                action={() => {
+                  if (group.alreadyExists) {
+                    navigate(`/${userId}/${group.id}`, { replace: false });
+                  }
+                  addUserToGroup(group.id);
+                }}
+              />
+            </Box>
           );
         })}
       </Stack>
@@ -160,10 +193,13 @@ const GroupCard = ({
 export const Layout: FC<PropsWithChildren> = () => {
   const { isMobile } = useViewPort();
   const theme = useTheme();
+  if (isMobile) {
+    return <Typography variant="h2">Use web view</Typography>;
+  }
   return (
     <Stack width="100%" height="100%">
       <Navbar />
-      <Stack direction="row" height="100%" width={"100%"}>
+      <Stack overflow='hidden' direction="row" height="100%" width={"100%"}>
         <SideBar />
         <Container
           sx={{
@@ -185,9 +221,11 @@ export const Layout: FC<PropsWithChildren> = () => {
 
 const AddGroup = ({ open, handleClose, addGroup }: IAddGroupProps) => {
   const [groupName, setGroupName] = useState<string>("");
+  const { userId } = useParams();
+  const uniqueId = userId ?? "";
   const handleAdd = () => {
     if (!groupName) return;
-    addGroup(groupName, false, null);
+    addGroup(groupName, false, null, uniqueId);
     handleClose();
   };
   return (

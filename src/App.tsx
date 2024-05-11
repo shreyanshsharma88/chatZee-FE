@@ -39,7 +39,14 @@ function App() {
             <Route path="" element={<Login />} />
             <Route element={<Layout />}>
               <Route element={<SocketProvider />}>
-                <Route path="/:userId" />
+                <Route
+                  path="/:userId"
+                  element={
+                    <Typography variant="h3" pt={4}>
+                      Click on any group or user to chat!!
+                    </Typography>
+                  }
+                />
                 <Route path="/:userId/:groupId" element={<Chat />} />
               </Route>
             </Route>

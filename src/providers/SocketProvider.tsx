@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
+import { SOCKET_URL } from "../utils";
 
 interface IMessage {
   userId: string;
@@ -25,7 +26,7 @@ export const SocketProvider = () => {
   const { userId, groupId } = useParams();
 
   useEffect(() => {
-    let ws = new WebSocket(`ws://localhost:8080/?userId=${userId}`);
+    let ws = new WebSocket(`${SOCKET_URL}?userId=${userId}`);
     const onSocketOpen = () => console.log("WebSocket is connected now");
     const onNewMessage = (m) => {
       const data = JSON.parse(m.data);
@@ -38,7 +39,7 @@ export const SocketProvider = () => {
     };
     const onClose = () => {
       console.log("WebSocket is closed now");
-      ws = new WebSocket(`ws://localhost:8080/?userId=${userId}`);
+      ws = new WebSocket(`${SOCKET_URL}?userId=${userId}`);
       setSocket(ws);
     };
     setSocket(ws);
