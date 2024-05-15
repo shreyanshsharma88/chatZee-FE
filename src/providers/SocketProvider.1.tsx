@@ -1,38 +1,26 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import { BASE_URL, SOCKET_URL } from "../utils";
 import { useQuery } from "react-query";
 import axios from "axios";
-
-interface IMessage {
-  userId: string;
-  groupId: string;
-  message: string;
-  userName: string;
-}
-interface ISocketContext {
-  socket: WebSocket | null;
-  messages: IMessage[] | null;
-  setMessages: (m: any[]) => void;
-}
-
-export const SocketContext = createContext<ISocketContext>({
-  socket: null,
-  messages: [],
-  setMessages: () => {},
-});
+import { IMessage, SocketContext } from "./SocketProvider";
 
 export const SocketProvider = () => {
   const [messages, setMessages] = useState<IMessage[] | null>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
   const { userId, groupId } = useParams();
 
+  const getUserDetails = useQuery(
+    ["users", userId],
+    () => axios.get(`${BASE_URL}/user/${userId}`),
+    {
+      enabled: !!userId && !userName,
+      onSuccess: (data) => {
+        setUserName(data.data.userName);
+      },
+    }
+  );
 
   useEffect(() => {
     let ws = new WebSocket(`${SOCKET_URL}?userId=${userId}`);
@@ -62,7 +50,7 @@ export const SocketProvider = () => {
       messages,
       socket,
       setMessages,
-      
+      userName,
     }),
     [messages, socket]
   );
@@ -76,5 +64,3 @@ export const SocketProvider = () => {
     </SocketContext.Provider>
   );
 };
-
-export const useSocketProvider = () => useContext(SocketContext);

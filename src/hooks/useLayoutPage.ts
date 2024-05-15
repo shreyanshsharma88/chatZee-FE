@@ -11,6 +11,8 @@ export const useLandingPage = () => {
   const [currentGroups, setCurrentGroups] = useState<ICurrentGroups[] | null>(
     null
   );
+  const [userName, setUserName] = useState<string | null>(null);
+
   const navigate = useNavigate();
   const { userId } = useParams();
   const getUsers = useQuery(
@@ -32,6 +34,17 @@ export const useLandingPage = () => {
     }
   );
 
+  const getUserDetails = useQuery(
+    ["userDetails", userId],
+    () => axios.get(`${BASE_URL}/user/${userId}`),
+    {
+      enabled: !userName,
+      onSuccess: (data) => {
+        setUserName(data.data.userName);
+      },
+    }
+  );
+
   const addGroupApi = useMutation(
     ["addGroup"],
     (data: {
@@ -43,9 +56,6 @@ export const useLandingPage = () => {
     {
       onSuccess: (res, payload) => {
         getGroups.refetch();
-        if (payload.isDm) {
-          
-        }
       },
     }
   );
@@ -55,7 +65,22 @@ export const useLandingPage = () => {
     uniqueId2: string | null,
     uniqueId: string
   ) => {
-    addGroupApi.mutate({ groupName, isDm, uniqueId2, uniqueId });
+    addGroupApi.mutate(
+      { groupName, isDm, uniqueId2, uniqueId },
+      {
+        onError: () => {
+          if (isDm) {
+            getUsers.refetch();
+            const id = currentUsers?.find(
+              (user) =>
+                user.dmID === `${userId}**${uniqueId2}` ||
+                user.dmID === `${uniqueId2}**${userId}`
+            )?.dmID;
+            navigate(`/${userId}/${id}`, { replace: false });
+          }
+        },
+      }
+    );
   };
   const addUserToGroupApi = useMutation(
     ["addUserToGroup"],
@@ -75,5 +100,5 @@ export const useLandingPage = () => {
     );
   };
 
-  return { currentUsers, addGroup, currentGroups, addUserToGroup };
+  return { currentUsers, addGroup, currentGroups, addUserToGroup, userName };
 };

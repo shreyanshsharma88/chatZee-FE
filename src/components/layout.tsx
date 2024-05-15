@@ -20,10 +20,12 @@ import {
 } from "react-router-dom";
 import { useLandingPage, useViewPort } from "../hooks";
 import { IAddGroupProps } from "../utils";
+import { useSocketProvider } from "../providers/SocketProvider";
 
 const Navbar = () => {
   const [searchParam] = useSearchParams();
-  const name = searchParam.get("userName");
+  const { userName } = useLandingPage();
+
   return (
     <Stack
       direction="row"
@@ -36,7 +38,7 @@ const Navbar = () => {
       top={0}
     >
       <Chat fontSize="large" />
-      <Typography variant="h4"> Hi {name}!</Typography>
+      <Typography variant="h4"> Hi {userName}!</Typography>
     </Stack>
   );
 };
@@ -68,7 +70,7 @@ const SideBar = () => {
     uniqueId2: string;
   }) => {
     if (isDmExisting) {
-      navigate(`/${userId}/${groupId}`,{replace : false});
+      navigate(`/${userId}/${groupId}`, { replace: false });
       return;
     }
     addGroup(`${userId}**${uniqueId2}`, true, uniqueId2, userId || "");
@@ -138,7 +140,7 @@ const SideBar = () => {
         {currentGroups?.map((group) => {
           if (!group) return null;
           return (
-            <Box key={group.id} >
+            <Box key={group.id}>
               <GroupCard
                 name={group.groupName}
                 alreadyExist={group.alreadyExists}
@@ -199,7 +201,7 @@ export const Layout: FC<PropsWithChildren> = () => {
   return (
     <Stack width="100%" height="100%">
       <Navbar />
-      <Stack overflow='hidden' direction="row" height="100%" width={"100%"}>
+      <Stack overflow="hidden" direction="row" height="100%" width={"100%"}>
         <SideBar />
         <Container
           sx={{
