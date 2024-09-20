@@ -13,7 +13,7 @@ export const useChat = () => {
   const getGroupMembers = useQuery({
     queryKey: [groupId],
     queryFn: async () => {
-      const data = await authAxios.get(`${BASE_URL}/getGroupDetails/${groupId}`);
+      const data = await authAxios.get(`/api/getGroupDetails/${groupId}`);
       setGroupDetails(data.data);
       // setMessages(data.data.messages);
     },

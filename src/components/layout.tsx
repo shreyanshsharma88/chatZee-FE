@@ -106,36 +106,7 @@ const SideBar = () => {
       >
         <Add />
       </IconButton>
-      <Typography variant="h5" fontWeight={700}>
-        Active Users
-      </Typography>
-      <Stack direction="column" gap={1} pl={2}>
-        {currentUsers?.map((user) => {
-          if (!user) return null;
-          return (
-            <Chip
-              label={user.name}
-              key={user.id}
-              color="info"
-              onClick={() =>
-                handleUserClick({
-                  isDmExisting: user.isDmExisting,
-                  groupId: user.dmID,
-                  uniqueId2: user.id,
-                })
-              }
-              sx={{
-                p: 2.5,
-                transition: "transform 0.3s ease",
-                scale: user.dmID === groupId ? 1.1 : 1,
-                "&:hover": {
-                  transform: "scale(1.1)",
-                },
-              }}
-            />
-          );
-        })}
-      </Stack>
+      
       <Typography variant="h5" fontWeight={700}>
         Current Groups
       </Typography>
@@ -156,6 +127,37 @@ const SideBar = () => {
                 }}
               />
             </Box>
+          );
+        })}
+      </Stack>
+      <Typography variant="h5" fontWeight={700}>
+        Active Users
+      </Typography>
+      <Stack direction="column" gap={1} pl={2}>
+        {currentUsers?.map((user) => {
+          if (!user) return null;
+          return (
+            <Chip
+              label={user.userName}
+              key={user.id}
+              color="info"
+              onClick={() =>
+                // fix it all
+                handleUserClick({
+                  isDmExisting: false,
+                  groupId: 'user.dmID',
+                  uniqueId2: user.id,
+                })
+              }
+              sx={{
+                p: 2.5,
+                transition: "transform 0.3s ease",
+                // scale: user.dmID === groupId ? 1.1 : 1,
+                "&:hover": {
+                  transform: "scale(1.1)",
+                },
+              }}
+            />
           );
         })}
       </Stack>

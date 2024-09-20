@@ -1,8 +1,8 @@
 export interface ICurrentUsers {
-  name: string;
+  userName: string;
   id: string;
-  isDmExisting: boolean;
-  dmID: string;
+  // isDmExisting: boolean;
+  // dmID: string;
 }
 
 export interface ICurrentGroups {

@@ -20,6 +20,7 @@ export const useLogin = () => {
       console.log("res", res.data);
       
       localStorage.setItem("userId", res.data.id);
+      localStorage.setItem("token", res.data.token)
       navigate(`/home`);
     },
   });
@@ -29,6 +30,7 @@ export const useLogin = () => {
       authAxios.post(`/login`, data),
     onSuccess: (data: AxiosResponse) => {
       localStorage.setItem("userId", data.data.id);
+      localStorage.setItem("token", data.data.token)
       navigate(`/home`);
     },
   });

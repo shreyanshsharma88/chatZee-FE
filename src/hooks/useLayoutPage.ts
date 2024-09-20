@@ -1,25 +1,25 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { BASE_URL, ICurrentGroups, ICurrentUsers } from "../utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { authAxios } from "../http/axiosConfig";
+import { ICurrentUsers } from "../utils";
 
 export const useLandingPage = () => {
-  const [currentUsers, setCurrentUsers] = useState<ICurrentUsers[] | null>(
-    null
-  );
-
-
-  const navigate = useNavigate();
+  
   const { userId } = useParams();
   const getGroups = useQuery({
     queryKey: ["groups", userId],
-    queryFn: async () => authAxios.get(`${BASE_URL}/getGroups`),
+    queryFn: async () => authAxios.get(`/api/getGroups`),
   });
+
+  const getAllUsers = useQuery({
+    queryKey: ["users", "all"],
+    queryFn: async () => authAxios.get(`/api/user?all=true`),
+  })
 
   const getUserDetails = useQuery({
     queryKey: ["userDetails", userId],
-    queryFn:  () =>  authAxios.get(`${BASE_URL}/user`)
+    queryFn:  () =>  authAxios.get(`/api/user`)
   });
 
   const addGroupApi = useMutation({
@@ -27,7 +27,7 @@ export const useLandingPage = () => {
     mutationFn: (data: {
       groupName: string;
       type: "GROUP" | "INDIVIDUAL";
-    }) => authAxios.post(`${BASE_URL}/group`, data),
+    }) => authAxios.post(`/api/group`, data),
     onSuccess: () => {
       getGroups.refetch();
     },
@@ -44,7 +44,7 @@ export const useLandingPage = () => {
   const addUserToGroupApi = useMutation({
     mutationKey: ["addUserToGroup"],
     mutationFn: (data: { groupId: string }) =>
-      authAxios.put(`${BASE_URL}/group/${data.groupId}`),
+      authAxios.put(`/api/group/${data.groupId}`),
   });
 
   const addUserToGroup = (groupId: string) => {
@@ -53,14 +53,13 @@ export const useLandingPage = () => {
       {
         onSuccess: () => {
           getGroups.refetch();
-          // navigate(`/${userId}/${groupId}`, { replace: false });
         },
       }
     );
   };
 
   return {
-    currentUsers,
+    currentUsers: getAllUsers.data?.data.users,
     addGroup,
     currentGroups: getGroups.data?.data.groups,
     addUserToGroup,

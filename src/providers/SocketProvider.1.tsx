@@ -15,7 +15,7 @@ export const SocketProvider = () => {
   const getUserDetails = useQuery({
     queryKey: ["users", userId],
     queryFn: async () => {
-      const data = await authAxios.get(`${BASE_URL}/user/${userId}`);
+      const data = await authAxios.get(`/api/user/${userId}`);
       setUserName(data.data.userName);
     },
     enabled: !!userId && !userName,
