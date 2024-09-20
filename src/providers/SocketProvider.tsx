@@ -30,8 +30,8 @@ export const SocketContext = createContext<ISocketContext>({
 export const SocketProvider = () => {
   const [messages, setMessages] = useState<IMessage[] | null>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
-  const { userId, groupId } = useParams();
-
+  const { groupId } = useParams();
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     let ws = new WebSocket(`${SOCKET_URL}?userId=${userId}`);
@@ -61,7 +61,6 @@ export const SocketProvider = () => {
       messages,
       socket,
       setMessages,
-      
     }),
     [messages, socket]
   );

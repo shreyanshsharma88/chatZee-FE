@@ -16,8 +16,11 @@ export const Chat = () => {
   const { groupDetails } = useChat();
   const [currMessage, setCurrMessage] = useState<string>("");
   const { socket, messages } = useSocketProvider();
-  const { userId, groupId } = useParams();
+  const {  groupId } = useParams();
   const [showMembers, setShowMembers] = useState(false);
+  const userId = localStorage.getItem("userId")
+  console.log({userId})
+
   const handleClick = () => {
     if (!currMessage) return;
     if (socket) {
