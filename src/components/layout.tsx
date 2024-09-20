@@ -73,7 +73,7 @@ const SideBar = () => {
       navigate(`/${userId}/${groupId}`, { replace: false });
       return;
     }
-    addGroup(`${userId}**${uniqueId2}`, true, uniqueId2, userId || "");
+    // addGroup(`${userId}**${uniqueId2}`, true, uniqueId2, userId || "");
   };
   const { groupId } = useParams();
   return (
@@ -142,11 +142,12 @@ const SideBar = () => {
           return (
             <Box key={group.id}>
               <GroupCard
-                name={group.groupName}
-                alreadyExist={group.alreadyExists}
+                name={group.groupname}
+                alreadyExist={group.isAlreadyAdded}
                 action={() => {
-                  if (group.alreadyExists) {
-                    navigate(`/${userId}/${group.id}`, { replace: false });
+                  if (group.isAlreadyAdded) {
+                    // navigate(`/${userId}/${group.id}`, { replace: false });
+                    return
                   }
                   addUserToGroup(group.id);
                 }}
@@ -227,7 +228,7 @@ const AddGroup = ({ open, handleClose, addGroup }: IAddGroupProps) => {
   const uniqueId = userId ?? "";
   const handleAdd = () => {
     if (!groupName) return;
-    addGroup(groupName, false, null, uniqueId);
+    addGroup(groupName, false);
     handleClose();
   };
   return (

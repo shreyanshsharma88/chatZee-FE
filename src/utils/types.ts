@@ -6,9 +6,10 @@ export interface ICurrentUsers {
 }
 
 export interface ICurrentGroups {
-  groupName: string;
   id: string;
-  alreadyExists: boolean;
+  groupname: string;
+  type: "GROUP" | "INDIVIDUAL";
+  isAlreadyAdded: boolean;
 }
 
 export interface IGroupDetails {
@@ -22,17 +23,20 @@ export interface IGroupProps {
   open: boolean;
   handleClose: () => void;
   currentGroups: ICurrentGroups[];
-  addUserToGroup: (id:string) => void;
+  addUserToGroup: (id: string) => void;
 }
 
 export interface IMemberProps {
-    open: boolean;
-    handleClose: () => void;
-    members: { id: string; userName: string }[];
+  open: boolean;
+  handleClose: () => void;
+  members: { id: string; userName: string }[];
 }
 export interface IAddGroupProps {
-    open: boolean;
-    handleClose: () => void;
-    addGroup: (groupName: string, isDm: boolean, uniqueId2: string | null,  uniqueId: string) => void ;
+  open: boolean;
+  handleClose: () => void;
+  addGroup: (
+    groupName: string,
+    isDm: boolean,
+    
+  ) => void;
 }
-

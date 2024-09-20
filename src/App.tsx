@@ -5,11 +5,20 @@ import { Route, Routes } from "react-router-dom";
 import { Chat, Login } from "./components";
 import { AppThemeProvider } from "./providers";
 import { SocketProvider } from "./providers/SocketProvider";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Layout } from "./components";
 
 function App() {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions:{
+      queries:{
+        refetchOnWindowFocus: false,
+      },
+      mutations:{
+        retry: false,
+      },
+    }
+  });
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -40,14 +49,14 @@ function App() {
             <Route element={<Layout />}>
               <Route element={<SocketProvider />}>
                 <Route
-                  path="/:userId"
+                  path="/home"
                   element={
                     <Typography variant="h3" pt={4}>
                       Click on any group or user to chat!!
                     </Typography>
                   }
                 />
-                <Route path="/:userId/:groupId" element={<Chat />} />
+                <Route path="/home/:groupId" element={<Chat />} />
               </Route>
             </Route>
           </Routes>

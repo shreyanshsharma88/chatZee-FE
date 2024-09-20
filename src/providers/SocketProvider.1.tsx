@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import { BASE_URL, SOCKET_URL } from "../utils";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { IMessage, SocketContext } from "./SocketProvider";
+import { authAxios } from "../http/axiosConfig";
 
 export const SocketProvider = () => {
   const [messages, setMessages] = useState<IMessage[] | null>(null);
@@ -11,16 +12,14 @@ export const SocketProvider = () => {
   const [userName, setUserName] = useState<string | null>(null);
   const { userId, groupId } = useParams();
 
-  const getUserDetails = useQuery(
-    ["users", userId],
-    () => axios.get(`${BASE_URL}/user/${userId}`),
-    {
-      enabled: !!userId && !userName,
-      onSuccess: (data) => {
-        setUserName(data.data.userName);
-      },
-    }
-  );
+  const getUserDetails = useQuery({
+    queryKey: ["users", userId],
+    queryFn: async () => {
+      const data = await authAxios.get(`${BASE_URL}/user/${userId}`);
+      setUserName(data.data.userName);
+    },
+    enabled: !!userId && !userName,
+  });
 
   useEffect(() => {
     let ws = new WebSocket(`${SOCKET_URL}?userId=${userId}`);

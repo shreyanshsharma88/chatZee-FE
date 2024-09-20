@@ -7,10 +7,9 @@ import React, {
 } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import { BASE_URL, SOCKET_URL } from "../utils";
-import { useQuery } from "react-query";
 import axios from "axios";
 
-interface IMessage {
+export interface IMessage {
   userId: string;
   groupId: string;
   message: string;
