@@ -37,7 +37,10 @@ const Navbar = () => {
       position="sticky"
       top={0}
     >
-      <Chat fontSize="large" />
+      <Stack direction="row" gap={2} alignItems='center'>
+        <Chat fontSize="large" />
+        <Typography variant="h4" fontWeight={700}>ChatZee</Typography>
+      </Stack>
       <Typography variant="h4"> Hi {userName}!</Typography>
     </Stack>
   );
@@ -147,7 +150,7 @@ const SideBar = () => {
                 action={() => {
                   if (group.isAlreadyAdded) {
                     // navigate(`/${userId}/${group.id}`, { replace: false });
-                    return
+                    return;
                   }
                   addUserToGroup(group.id);
                 }}
