@@ -31,10 +31,10 @@ export const SocketProvider = () => {
   const [messages, setMessages] = useState<IMessage[] | null>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const { groupId } = useParams();
-  const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    let ws = new WebSocket(`${SOCKET_URL}?userId=${userId}`);
+    let ws = new WebSocket(`${SOCKET_URL}?userId=${token}`);
     const onSocketOpen = () => console.log("WebSocket is connected now");
     const onNewMessage = (m) => {
       const data = JSON.parse(m.data);
@@ -47,7 +47,7 @@ export const SocketProvider = () => {
     };
     const onClose = () => {
       console.log("WebSocket is closed now");
-      ws = new WebSocket(`${SOCKET_URL}?userId=${userId}`);
+      ws = new WebSocket(`${SOCKET_URL}?userId=${token}`);
       setSocket(ws);
     };
     setSocket(ws);
@@ -55,7 +55,7 @@ export const SocketProvider = () => {
     ws.addEventListener("message", (m) => onNewMessage(m));
     ws.addEventListener("close", onClose);
     // ws.on;
-  }, [userId, groupId]);
+  }, [token, groupId]);
   const value = useMemo(
     () => ({
       messages,

@@ -10,14 +10,15 @@ import { Layout } from "./components";
 
 function App() {
   const queryClient = new QueryClient({
-    defaultOptions:{
-      queries:{
+    defaultOptions: {
+      queries: {
         refetchOnWindowFocus: false,
+        staleTime: Infinity
       },
-      mutations:{
+      mutations: {
         retry: false,
       },
-    }
+    },
   });
 
   return (
@@ -35,6 +36,7 @@ function App() {
             height: "90vh",
             overflow: "scroll",
             scrollbarWidth: "none",
+            maxWidth: '1400px !important',
             mt: 6,
             "&::-webkit-scrollbar": {
               display: "none",

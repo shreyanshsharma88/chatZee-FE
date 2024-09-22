@@ -13,7 +13,7 @@ import { useParams } from "react-router-dom";
 import { Send } from "@mui/icons-material";
 
 export const Chat = () => {
-  const { groupDetails } = useChat();
+  const { groupDetails, groupName } = useChat();
   const [currMessage, setCurrMessage] = useState<string>("");
   const { socket, messages } = useSocketProvider();
   const {  groupId } = useParams();
@@ -35,6 +35,7 @@ export const Chat = () => {
   };
   return (
     <Stack p={4} height="100%" direction="column" gap={2}>
+      <Typography variant="h4">{groupName}</Typography>
       <Stack height="90%" width={"100%"} direction="column" sx={{
         overflowY: "scroll",
         scrollbarWidth: "none",

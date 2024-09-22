@@ -10,13 +10,9 @@ export const useChat = () => {
   const [groupDetails, setGroupDetails] = useState<IGroupDetails | null>(null);
   const { groupId } = useParams();
 
-  const getGroupMembers = useQuery({
-    queryKey: [groupId],
-    queryFn: async () => {
-      const data = await authAxios.get(`/api/getGroupDetails/${groupId}`);
-      setGroupDetails(data.data);
-      // setMessages(data.data.messages);
-    },
-  });
-  return { groupDetails };
+ const getGroupDetails = useQuery({
+  queryKey: ['getGroup' , groupId],
+  queryFn: () => authAxios.get(`/api/group/${groupId}`)
+ })
+  return { groupDetails, groupName: getGroupDetails?.data?.data.group.groupName };
 };

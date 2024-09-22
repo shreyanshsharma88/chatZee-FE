@@ -6,6 +6,7 @@ import {
   Container,
   Dialog,
   IconButton,
+  Pagination,
   Stack,
   TextField,
   Typography,
@@ -37,9 +38,11 @@ const Navbar = () => {
       position="sticky"
       top={0}
     >
-      <Stack direction="row" gap={2} alignItems='center'>
+      <Stack direction="row" gap={2} alignItems="center">
         <Chat fontSize="large" />
-        <Typography variant="h4" fontWeight={700}>ChatZee</Typography>
+        <Typography variant="h4" fontWeight={700}>
+          ChatZee
+        </Typography>
       </Stack>
       <Typography variant="h4"> Hi {userName}!</Typography>
     </Stack>
@@ -47,8 +50,18 @@ const Navbar = () => {
 };
 
 const SideBar = () => {
-  const { currentGroups, currentUsers, addUserToGroup, addGroup } =
-    useLandingPage();
+  const {
+    currentGroups,
+    currentUsers,
+    addUserToGroup,
+    addGroup,
+    setUserPage,
+    userPage,
+    totalUsers,
+    groupPage,
+    setGroupPage,
+    totalGroups,
+  } = useLandingPage();
   const [searchParam, setSearchParams] = useSearchParams();
   const handleOpenAddGroupDialog = () => {
     const params = new URLSearchParams(searchParam);
@@ -106,10 +119,21 @@ const SideBar = () => {
       >
         <Add />
       </IconButton>
-      
+
       <Typography variant="h5" fontWeight={700}>
         Current Groups
       </Typography>
+      <Pagination
+        sx={{
+          ".MuiPaginationItem-root": {
+            color: "#fff",
+          },
+        }}
+        page={groupPage}
+        onChange={(_, page) => setGroupPage(page)}
+        color="primary"
+        count={Math.ceil(totalGroups / 5)}
+      />
       <Stack direction="column" gap={1} pl={2}>
         {currentGroups?.map((group) => {
           if (!group) return null;
@@ -120,7 +144,7 @@ const SideBar = () => {
                 alreadyExist={group.isAlreadyAdded}
                 action={() => {
                   if (group.isAlreadyAdded) {
-                    // navigate(`/${userId}/${group.id}`, { replace: false });
+                    navigate(`/home/${group.id}`, { replace: false });
                     return;
                   }
                   addUserToGroup(group.id);
@@ -130,9 +154,21 @@ const SideBar = () => {
           );
         })}
       </Stack>
+
       <Typography variant="h5" fontWeight={700}>
         Active Users
       </Typography>
+      <Pagination
+        sx={{
+          ".MuiPaginationItem-root": {
+            color: "#fff",
+          },
+        }}
+        page={userPage}
+        onChange={(_, page) => setUserPage(page)}
+        color="primary"
+        count={Math.ceil(totalUsers / 5)}
+      />
       <Stack direction="column" gap={1} pl={2}>
         {currentUsers?.map((user) => {
           if (!user) return null;
@@ -145,7 +181,7 @@ const SideBar = () => {
                 // fix it all
                 handleUserClick({
                   isDmExisting: false,
-                  groupId: 'user.dmID',
+                  groupId: "user.dmID",
                   uniqueId2: user.id,
                 })
               }
