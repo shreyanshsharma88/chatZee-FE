@@ -43,9 +43,9 @@ export const Chat = () => {
           display: "none",
         },
       }}>
-        {groupDetails?.chat?.concat(messages ?? [])?.map((m, index) => {
+        {messages ?.map((m, index) => {
           if (!m) return null;
-          const isSameUser = m?.userId === userId;
+          const isSameUser = m?.sentBy === userId;
           return (
             <Stack
               alignSelf={isSameUser ? "flex-end" : "flex-start"}

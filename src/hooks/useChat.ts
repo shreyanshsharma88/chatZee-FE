@@ -12,7 +12,17 @@ export const useChat = () => {
 
  const getGroupDetails = useQuery({
   queryKey: ['getGroup' , groupId],
-  queryFn: () => authAxios.get(`/api/group/${groupId}`)
+  queryFn: () => authAxios.get(`/api/group/${groupId}`),
+  enabled: !!groupId
+ })
+
+ const getGroupChat = useQuery({
+  queryKey: [],
+  queryFn: async () => {
+    const {data} = await authAxios. get(`/api/chat/${groupId}`)
+    setMessages(data.chats)
+  },
+  enabled: !!groupId
  })
   return { groupDetails, groupName: getGroupDetails?.data?.data.group.groupName };
 };

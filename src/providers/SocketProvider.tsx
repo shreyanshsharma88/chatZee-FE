@@ -10,10 +10,11 @@ import { BASE_URL, SOCKET_URL } from "../utils";
 import axios from "axios";
 
 export interface IMessage {
-  userId: string;
-  groupId: string;
+  sentBy: string;
+  sentTo: string;
   message: string;
-  userName: string;
+  id: string;
+  time: string;
 }
 interface ISocketContext {
   socket: WebSocket | null;

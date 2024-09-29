@@ -1,5 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "../utils";
+import { toast } from "react-toastify";
 
 export const authAxios = axios.create({
   baseURL: BASE_URL,
@@ -20,11 +21,14 @@ authAxios.interceptors.request.use((config) => {
 authAxios.interceptors.response.use(
   (res) => res,
   (err) => {
+
     if (err.response.status === 401) {
       // TODO: WRITE A LOGOUT FUNCTION
       // localStorage.removeItem("userId");
       // localStorage.removeItem("token");
     }
+    
+    toast(err.response.data.message)
     return Promise.reject(err);
   }
 );
