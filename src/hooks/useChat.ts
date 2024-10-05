@@ -10,19 +10,23 @@ export const useChat = () => {
   const [groupDetails, setGroupDetails] = useState<IGroupDetails | null>(null);
   const { groupId } = useParams();
 
- const getGroupDetails = useQuery({
-  queryKey: ['getGroup' , groupId],
-  queryFn: () => authAxios.get(`/api/group/${groupId}`),
-  enabled: !!groupId
- })
+  const getGroupDetails = useQuery({
+    queryKey: ["getGroup", groupId],
+    queryFn: () => authAxios.get(`/api/group/${groupId}`),
+    enabled: !!groupId,
+  });
 
- const getGroupChat = useQuery({
-  queryKey: [],
-  queryFn: async () => {
-    const {data} = await authAxios. get(`/api/chat/${groupId}`)
-    setMessages(data.chats)
-  },
-  enabled: !!groupId
- })
-  return { groupDetails, groupName: getGroupDetails?.data?.data.group.groupName };
+  const getGroupChat = useQuery({
+    queryKey: ['chat', groupId],
+    queryFn: async () => {
+      const { data } = await authAxios.get(`/api/chat/${groupId}`);
+      setMessages(data.chats);
+      return data;
+    },
+    enabled: !!groupId,
+  });
+  return {
+    groupDetails,
+    groupName: getGroupDetails?.data?.data.group.groupName,
+  };
 };

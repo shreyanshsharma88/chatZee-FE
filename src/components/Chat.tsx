@@ -16,11 +16,9 @@ export const Chat = () => {
   const { groupDetails, groupName } = useChat();
   const [currMessage, setCurrMessage] = useState<string>("");
   const { socket, messages } = useSocketProvider();
-  const {  groupId } = useParams();
+  const { groupId } = useParams();
   const [showMembers, setShowMembers] = useState(false);
-  const userId = localStorage.getItem("userId")
-  console.log({userId})
-
+  const userId = localStorage.getItem("userId");
   const handleClick = () => {
     if (!currMessage) return;
     if (socket) {
@@ -33,17 +31,24 @@ export const Chat = () => {
       setCurrMessage("");
     }
   };
+
+  
   return (
     <Stack p={4} height="100%" direction="column" gap={2}>
       <Typography variant="h4">{groupName}</Typography>
-      <Stack height="90%" width={"100%"} direction="column" sx={{
-        overflowY: "scroll",
-        scrollbarWidth: "none",
-        "&::-webkit-scrollbar": {
-          display: "none",
-        },
-      }}>
-        {messages ?.map((m, index) => {
+      <Stack
+        height="90%"
+        width={"100%"}
+        direction="column"
+        sx={{
+          overflowY: "scroll",
+          scrollbarWidth: "none",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+        }}
+      >
+        {messages?.map((m, index) => {
           if (!m) return null;
           const isSameUser = m?.sentBy === userId;
           return (
@@ -71,7 +76,7 @@ export const Chat = () => {
                   alignSelf="start"
                   variant="caption"
                 >
-                  By-{m.userName}
+                  By-m.userName
                 </Typography>
               )}
             </Stack>
@@ -96,4 +101,3 @@ export const Chat = () => {
     </Stack>
   );
 };
-3;

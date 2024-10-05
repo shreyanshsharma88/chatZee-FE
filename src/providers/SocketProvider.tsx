@@ -39,12 +39,14 @@ export const SocketProvider = () => {
     const onSocketOpen = () => console.log("WebSocket is connected now");
     const onNewMessage = (m) => {
       const data = JSON.parse(m.data);
-      if (groupId === data.groupId) {
+     
+      if (groupId === data.sentTo) {
         setMessages((p) => {
           if (!p) return [data];
           return [...p, data];
         });
       }
+      
     };
     const onClose = () => {
       console.log("WebSocket is closed now");
