@@ -79,19 +79,16 @@ const SideBar = () => {
   const handleUserClick = ({
     isDmExisting,
     groupId,
-    uniqueId2,
   }: {
     isDmExisting: boolean;
     groupId: string;
-    uniqueId2: string;
   }) => {
     if (isDmExisting) {
-      navigate(`/${userId}/${groupId}`, { replace: false });
+      navigate(`/home/${groupId}`, { replace: false });
       return;
     }
-    // addGroup(`${userId}**${uniqueId2}`, true, uniqueId2, userId || "");
+    addGroup(`${userId}-dm`,true);
   };
-  const { groupId } = useParams();
   return (
     <Stack
       p={2}
@@ -180,9 +177,8 @@ const SideBar = () => {
               onClick={() =>
                 // fix it all
                 handleUserClick({
-                  isDmExisting: false,
-                  groupId: "user.dmID",
-                  uniqueId2: user.id,
+                  isDmExisting: user.alreadyAddedInDm,
+                  groupId: user.dmId,
                 })
               }
               sx={{
@@ -265,8 +261,6 @@ export const Layout: FC<PropsWithChildren> = () => {
 
 const AddGroup = ({ open, handleClose, addGroup }: IAddGroupProps) => {
   const [groupName, setGroupName] = useState<string>("");
-  const { userId } = useParams();
-  const uniqueId = userId ?? "";
   const handleAdd = () => {
     if (!groupName) return;
     addGroup(groupName, false);
