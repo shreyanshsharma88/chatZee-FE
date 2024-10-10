@@ -79,15 +79,18 @@ const SideBar = () => {
   const handleUserClick = ({
     isDmExisting,
     groupId,
+    userId
   }: {
     isDmExisting: boolean;
     groupId: string;
+    userId: string
+
   }) => {
     if (isDmExisting) {
       navigate(`/home/${groupId}`, { replace: false });
       return;
     }
-    addGroup(`${userId}-dm`,true);
+    addGroup(`${userId}-dm`,true, [userId]);
   };
   return (
     <Stack
@@ -179,6 +182,7 @@ const SideBar = () => {
                 handleUserClick({
                   isDmExisting: user.alreadyAddedInDm,
                   groupId: user.dmId,
+                  userId: user.id
                 })
               }
               sx={{

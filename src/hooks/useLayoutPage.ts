@@ -28,6 +28,7 @@ export const useLandingPage = () => {
     mutationFn: (data: {
       groupName: string;
       type: "GROUP" | "INDIVIDUAL";
+      users?: string[]
     }) => authAxios.post(`/api/group`, data),
     onSuccess: () => {
       getGroups.refetch();
@@ -36,10 +37,12 @@ export const useLandingPage = () => {
   const addGroup = (
     groupName: string,
     isDm: boolean,
+    users?: string[]
   ) => {
     addGroupApi.mutate({
       groupName: groupName,
       type: isDm ? "INDIVIDUAL" : "GROUP",
+      users
     })
   };
   const addUserToGroupApi = useMutation({
