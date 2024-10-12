@@ -1,28 +1,50 @@
 import { Add, Chat } from "@mui/icons-material";
 import {
-    Box,
-    IconButton,
-    Pagination,
-    Stack,
-    Typography,
-    useTheme
+  Box,
+  Divider,
+  Fab,
+  IconButton,
+  Pagination,
+  Stack,
+  Tooltip,
+  Typography,
+  useTheme,
 } from "@mui/material";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useLandingPage } from "../../hooks";
 
 import { Button, Dialog, TextField } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
+import { authAxios } from "../../http/axiosConfig";
 import { IAddGroupProps } from "../../utils";
+import catAnimation from "../../../public/animations/cat-animation.json";
+import Lottie from "lottie-react";
 
-export const SideBar = () => {
-  const {
-    currentGroups,
-    addUserToGroup,
-    addGroup,
-    groupPage,
-    setGroupPage,
-    totalGroups,
-  } = useLandingPage();
+interface ISideBarProps {
+  addGroup: ({
+    groupName,
+    isDm,
+    users,
+  }: {
+    groupName: string;
+    isDm: boolean;
+    users?: string[];
+  }) => void;
+  addUserToGroup: (groupId: string) => void;
+  userName: string;
+}
+export const SideBar = ({
+  addGroup,
+  addUserToGroup,
+  userName,
+}: ISideBarProps) => {
+  const [groupPage, setGroupPage] = useState(1);
+
+  const getUserGroups = useQuery({
+    queryKey: ["groups", { all: false }],
+    queryFn: () => authAxios.get(`/api/group?limit=5&page=${groupPage}`),
+  });
+
   const [searchParam, setSearchParams] = useSearchParams();
   const handleOpenAddGroupDialog = () => {
     const params = new URLSearchParams(searchParam);
@@ -57,52 +79,65 @@ export const SideBar = () => {
         handleClose={handleCloseAddGroupDialog}
         addGroup={addGroup}
       />
-      <IconButton
-        onClick={handleOpenAddGroupDialog}
-        sx={{ bgcolor: "secondary.light", width: 40 }}
-      >
-        <Add />
-      </IconButton>
+      <Tooltip title="Add a group">
+        <Fab onClick={handleOpenAddGroupDialog} color="primary">
+          <Add />
+        </Fab>
+      </Tooltip>
 
-      <Typography variant="h5" fontWeight={700}>
-        Current Groups
-      </Typography>
-      <Pagination
-        sx={{
-          ".MuiPaginationItem-root": {
-            color: "#fff",
-          },
-        }}
-        page={groupPage}
-        onChange={(_, page) => setGroupPage(page)}
-        color="primary"
-        count={Math.ceil(totalGroups / 5)}
-      />
-      <Stack direction="column" gap={1} pl={2}>
-        {currentGroups?.map((group) => {
-          if (!group) return null;
-          return (
-            <Box key={group.id}>
-              <GroupCard
-                name={group.groupname}
-                alreadyExist={group.isAlreadyAdded}
-                action={() => {
-                  if (group.isAlreadyAdded) {
-                    navigate(`/home/${group.id}`, { replace: false });
-                    return;
-                  }
-                  addUserToGroup(group.id);
-                }}
-              />
-            </Box>
-          );
-        })}
+      <Stack width="100%" alignItems="center">
+        <Box height={200} display="flex" alignItems="center">
+          <Lottie animationData={catAnimation} />
+        </Box>
+        <Typography variant="h3" fontWeight={700}>
+          Hey there, {userName}!
+        </Typography>
       </Stack>
 
-      <Typography variant="h5" fontWeight={700}>
-        Active Users
+      <Divider sx={{ borderColor: "#fff" }} />
+
+      <Typography variant="h4" fontWeight={700}>
+        My Groups
       </Typography>
-     
+      {Number(getUserGroups.data?.data.total) > 4 && (
+        <Pagination
+          sx={{
+            ".MuiPaginationItem-root": {
+              color: "#fff",
+            },
+          }}
+          page={groupPage}
+          onChange={(_, page) => setGroupPage(page)}
+          color="primary"
+          count={Math.ceil(getUserGroups.data?.data.total / 5)}
+        />
+      )}
+      {getUserGroups.data?.data.groups.length > 0 ? (
+        <Stack direction="column" gap={1} pl={2} overflow="auto">
+          {getUserGroups.data?.data.groups?.map((group) => {
+            if (!group) return null;
+            return (
+              <Box key={group.id}>
+                <GroupCard
+                  name={group.groupname}
+                  alreadyExist={group.isAlreadyAdded}
+                  action={() => {
+                    if (group.isAlreadyAdded) {
+                      navigate(`/home/${group.id}`, { replace: false });
+                      return;
+                    }
+                    addUserToGroup(group.id);
+                  }}
+                />
+              </Box>
+            );
+          })}
+        </Stack>
+      ) : (
+        <Typography variant="h6">
+          You are not added in any groups yet...
+        </Typography>
+      )}
     </Stack>
   );
 };
@@ -112,8 +147,8 @@ const AddGroup = ({ open, handleClose, addGroup }: IAddGroupProps) => {
   const handleAdd = () => {
     if (!groupName) return;
     addGroup({
-        groupName,
-        isDm: false,
+      groupName,
+      isDm: false,
     });
     handleClose();
   };
@@ -140,7 +175,7 @@ const AddGroup = ({ open, handleClose, addGroup }: IAddGroupProps) => {
   );
 };
 
-const GroupCard = ({
+export const GroupCard = ({
   name,
   alreadyExist,
   action,

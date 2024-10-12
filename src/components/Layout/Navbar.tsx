@@ -1,10 +1,9 @@
-import { Chat } from "@mui/icons-material";
-import { Stack, Typography } from "@mui/material";
+import { Chat, Logout } from "@mui/icons-material";
+import { IconButton, Stack, Typography } from "@mui/material";
 import React from "react";
-import { useLandingPage } from "../../hooks";
+import { logout } from "../../http/axiosConfig";
 
-export const Navbar = () => {
-  const { userName } = useLandingPage();
+export const Navbar = ({userName}:{userName: string}) => {
   return (
     <Stack
       direction="row"
@@ -22,7 +21,10 @@ export const Navbar = () => {
           ChatZee
         </Typography>
       </Stack>
-      <Typography variant="h4"> Hi {userName}!</Typography>
+    <IconButton onClick={logout}>
+      <Logout color="warning" fontSize="large"/>
+    </IconButton>
     </Stack>
   );
 };
+

@@ -1,17 +1,13 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { authAxios } from "../http/axiosConfig";
 import { ICurrentUsers } from "../utils";
 
 export const useLandingPage = () => {
-  const [groupPage, setGroupPage] = useState(1);
   const { userId } = useParams();
-  const getGroups = useQuery({
-    queryKey: ["groups", userId],
-    queryFn: async () =>
-      authAxios.get(`/api/getGroups?limit=5&page=${groupPage}&all=true`),
-  });
+
+  const queryClient = useQueryClient();
 
   const getUserDetails = useQuery({
     queryKey: ["userDetails", userId],
@@ -26,10 +22,18 @@ export const useLandingPage = () => {
       users?: string[];
     }) => authAxios.post(`/api/group`, data),
     onSuccess: () => {
-      getGroups.refetch();
+      // getAllGroups.refetch();
     },
   });
-  const addGroup = ({groupName, isDm,  users}:{groupName: string, isDm: boolean, users?: string[]}) => {
+  const addGroup = ({
+    groupName,
+    isDm,
+    users,
+  }: {
+    groupName: string;
+    isDm: boolean;
+    users?: string[];
+  }) => {
     addGroupApi.mutate({
       groupName: groupName,
       type: isDm ? "INDIVIDUAL" : "GROUP",
@@ -46,8 +50,12 @@ export const useLandingPage = () => {
     addUserToGroupApi.mutate(
       { groupId },
       {
-        onSuccess: () => {
-          getGroups.refetch();
+        onSuccess: async () => {
+         await queryClient.invalidateQueries({
+            queryKey: ["groups", { all: false }],
+            exact: true,
+            refetchType: "active",
+          });
         },
       }
     );
@@ -55,12 +63,7 @@ export const useLandingPage = () => {
 
   return {
     addGroup,
-    currentGroups: getGroups.data?.data.groups,
     addUserToGroup,
     userName: getUserDetails.data?.data.user.userName,
-
-    groupPage,
-    setGroupPage,
-    totalGroups: getGroups.data?.data.total,
   };
 };

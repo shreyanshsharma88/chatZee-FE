@@ -23,13 +23,16 @@ authAxios.interceptors.response.use(
   (err) => {
 
     if (err.response.status === 401) {
-      // TODO: WRITE A LOGOUT FUNCTION ON SERVER
-      localStorage.removeItem("userId");
-      localStorage.removeItem("token");
-      window.location.href = '/'
+      logout()
     }
     
     toast(err.response.data.message)
     return Promise.reject(err);
   }
 );
+
+export const logout = () => {
+  localStorage.removeItem("userId");
+  localStorage.removeItem("token");
+  window.location.href = '/'
+}

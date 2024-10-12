@@ -41,6 +41,6 @@ export interface IAddGroupProps {
   }: {
     groupName: string;
     isDm: boolean;
-    users?: { id: string; userName: string }[];
+    users?: string[];
   }) => void;
 }
