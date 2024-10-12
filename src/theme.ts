@@ -34,18 +34,7 @@ export const customTheme = () => {
           color: "secondary",
         },
       },
-      MuiTextField:{
-        defaultProps:{
-          sx:{
-            border:'1px solid white'
-          },
-          InputProps:{
-            sx:{
-              color:'#fff'
-            }
-          }
-        }
-      }
+    
     },
   });
 

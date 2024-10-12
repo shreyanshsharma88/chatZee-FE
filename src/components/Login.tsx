@@ -35,6 +35,7 @@ export const Login = () => {
         onClick={() => {
           setForm(form === "login" ? "signup" : "login");
         }}
+        sx={{ cursor: "pointer" }}
       >
         {form === "login"
           ? "Don't have an account?"

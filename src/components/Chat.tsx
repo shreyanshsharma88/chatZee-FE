@@ -13,11 +13,10 @@ import { useParams } from "react-router-dom";
 import { Send } from "@mui/icons-material";
 
 export const Chat = () => {
-  const { groupDetails, groupName } = useChat();
+  const { groupName } = useChat();
   const [currMessage, setCurrMessage] = useState<string>("");
   const { socket, messages } = useSocketProvider();
   const { groupId } = useParams();
-  const [showMembers, setShowMembers] = useState(false);
   const userId = localStorage.getItem("userId");
   const handleClick = () => {
     if (!currMessage) return;
@@ -31,8 +30,6 @@ export const Chat = () => {
       setCurrMessage("");
     }
   };
-
-  
   return (
     <Stack p={4} height="100%" direction="column" gap={2}>
       <Typography variant="h4">{groupName}</Typography>
