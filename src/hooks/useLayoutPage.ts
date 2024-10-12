@@ -1,26 +1,17 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { authAxios } from "../http/axiosConfig";
 import { ICurrentUsers } from "../utils";
 
 export const useLandingPage = () => {
-  const [userPage, setUserPage] = useState(1)
-  const [groupPage, setGroupPage] = useState(1)
   const { userId } = useParams();
-  const getGroups = useQuery({
-    queryKey: ["groups", userId],
-    queryFn: async () => authAxios.get(`/api/getGroups?limit=5&page=${groupPage}&all=true`),
-  });
 
-  const getAllUsers = useQuery({
-    queryKey: ["users", "all", userPage],
-    queryFn: async () => authAxios.get(`/api/user?all=true&limit=5&page=${userPage}`),
-  })
+  const queryClient = useQueryClient();
 
   const getUserDetails = useQuery({
     queryKey: ["userDetails", userId],
-    queryFn:  () =>  authAxios.get(`/api/user`)
+    queryFn: () => authAxios.get(`/api/user`),
   });
 
   const addGroupApi = useMutation({
@@ -28,19 +19,26 @@ export const useLandingPage = () => {
     mutationFn: (data: {
       groupName: string;
       type: "GROUP" | "INDIVIDUAL";
+      users?: string[];
     }) => authAxios.post(`/api/group`, data),
     onSuccess: () => {
-      getGroups.refetch();
+      // getAllGroups.refetch();
     },
   });
-  const addGroup = (
-    groupName: string,
-    isDm: boolean,
-  ) => {
+  const addGroup = ({
+    groupName,
+    isDm,
+    users,
+  }: {
+    groupName: string;
+    isDm: boolean;
+    users?: string[];
+  }) => {
     addGroupApi.mutate({
       groupName: groupName,
       type: isDm ? "INDIVIDUAL" : "GROUP",
-    })
+      users,
+    });
   };
   const addUserToGroupApi = useMutation({
     mutationKey: ["addUserToGroup"],
@@ -52,24 +50,20 @@ export const useLandingPage = () => {
     addUserToGroupApi.mutate(
       { groupId },
       {
-        onSuccess: () => {
-          getGroups.refetch();
+        onSuccess: async () => {
+         await queryClient.invalidateQueries({
+            queryKey: ["groups", { all: false }],
+            exact: true,
+            refetchType: "active",
+          });
         },
       }
     );
   };
 
   return {
-    currentUsers: getAllUsers.data?.data.users,
     addGroup,
-    currentGroups: getGroups.data?.data.groups,
     addUserToGroup,
     userName: getUserDetails.data?.data.user.userName,
-    userPage,
-    setUserPage,
-    groupPage,
-    setGroupPage,
-    totalUsers: getAllUsers.data?.data.total,
-    totalGroups: getGroups.data?.data.total
   };
 };

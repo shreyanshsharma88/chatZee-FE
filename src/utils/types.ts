@@ -34,9 +34,13 @@ export interface IMemberProps {
 export interface IAddGroupProps {
   open: boolean;
   handleClose: () => void;
-  addGroup: (
-    groupName: string,
-    isDm: boolean,
-    
-  ) => void;
+  addGroup: ({
+    groupName,
+    isDm,
+    users,
+  }: {
+    groupName: string;
+    isDm: boolean;
+    users?: string[];
+  }) => void;
 }
