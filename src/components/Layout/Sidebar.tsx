@@ -14,10 +14,15 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { Button, Dialog, TextField } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { authAxios } from "../../http/axiosConfig";
 import { IAddGroupProps } from "../../utils";
 import catAnimation from "../../../public/animations/cat-animation.json";
+import dogAnimation from "../../../public/animations/dog-animation.json";
+import pigeonAnimation from "../../../public/animations/pigeon-animation.json";
+import cowAnimation from "../../../public/animations/cow-animation.json"
+import someAnimalAnimation from "../../../public/animations/someAnimal-animation.json"
+
 import Lottie from "lottie-react";
 
 interface ISideBarProps {
@@ -44,6 +49,11 @@ export const SideBar = ({
     queryKey: ["groups", { all: false }],
     queryFn: () => authAxios.get(`/api/group?limit=5&page=${groupPage}`),
   });
+
+  const randomAnimation = useMemo(() => {
+    const animations = [catAnimation, dogAnimation, pigeonAnimation, cowAnimation, someAnimalAnimation];
+    return animations[Math.floor(Math.random() * animations.length)];
+  }, [catAnimation, dogAnimation, pigeonAnimation])
 
   const [searchParam, setSearchParams] = useSearchParams();
   const handleOpenAddGroupDialog = () => {
@@ -87,7 +97,7 @@ export const SideBar = ({
 
       <Stack width="100%" alignItems="center">
         <Box height={200} display="flex" alignItems="center">
-          <Lottie animationData={catAnimation} />
+          <Lottie animationData={randomAnimation} />
         </Box>
         <Typography variant="h3" fontWeight={700}>
           Hey there, {userName}!

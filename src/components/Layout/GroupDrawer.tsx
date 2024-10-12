@@ -8,17 +8,21 @@ import {
   Typography,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { authAxios } from "../../http/axiosConfig";
 import { useNavigate } from "react-router-dom";
 import { GroupCard } from "./Sidebar";
 
 // TODO: FIX ALL
-export const GroupDrawer = ({ open, onClose , addUserToGroup}: IGroupDrawerProps) => {
+export const GroupDrawer = ({
+  open,
+  onClose,
+  addUserToGroup,
+}: IGroupDrawerProps) => {
   const [userPage, setUserPage] = useState(1);
 
   const getGroups = useQuery({
-    queryKey: ["users", "all", { userPage }],
+    queryKey: ["groups", { userPage, all: true }],
     queryFn: async () =>
       authAxios.get(`/api/group?all=true&limit=10&page=${userPage}`),
   });
@@ -78,5 +82,5 @@ export const GroupDrawer = ({ open, onClose , addUserToGroup}: IGroupDrawerProps
 interface IGroupDrawerProps {
   open: boolean;
   onClose: () => void;
-  addUserToGroup: (groupId: string) => void
+  addUserToGroup: (groupId: string) => void;
 }

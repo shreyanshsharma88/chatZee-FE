@@ -22,7 +22,11 @@ export const useLandingPage = () => {
       users?: string[];
     }) => authAxios.post(`/api/group`, data),
     onSuccess: () => {
-      // getAllGroups.refetch();
+      queryClient.invalidateQueries({
+        exact: false,
+        queryKey: ["groups"],
+        refetchType: "active",
+      })
     },
   });
   const addGroup = ({
