@@ -22,6 +22,7 @@ export const Layout: FC<PropsWithChildren> = () => {
   // TODO: HANDLE FROM QUERY
   const [showUserDrawer, setShowUserDrawer] = useState(false);
   const [showGroupDrawer, setShowGroupDrawer] = useState(false);
+  const navigate = useNavigate();
 
   const handleUserClick = ({
     isDmExisting,
@@ -32,9 +33,8 @@ export const Layout: FC<PropsWithChildren> = () => {
     groupId: string;
     userId: string;
   }) => {
-    const navigate = useNavigate();
 
-    if (isDmExisting) {
+    if (!!isDmExisting) {
       navigate(`/home/${groupId}`, { replace: false });
       return;
     }

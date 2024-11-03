@@ -73,7 +73,7 @@ export const Chat = () => {
                   alignSelf="start"
                   variant="caption"
                 >
-                  By-m.userName
+                  By-{m.sentByUsername}
                 </Typography>
               )}
             </Stack>

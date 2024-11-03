@@ -15,6 +15,7 @@ export interface IMessage {
   message: string;
   id: string;
   time: string;
+  sentByUsername: string;
 }
 interface ISocketContext {
   socket: WebSocket | null;
