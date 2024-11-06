@@ -41,7 +41,7 @@ export const GroupDrawer = ({
       }}
     >
       <Stack p={4} alignSelf="center" width="100%" direction="column" gap={3}>
-        <Typography variant="h4">Current Users</Typography>
+        <Typography variant="h4">Current Groups</Typography>
 
         <Stack direction="column" gap={1} pl={2} overflow="auto">
           {getGroups.data?.data.groups?.map((group) => {

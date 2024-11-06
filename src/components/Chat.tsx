@@ -7,13 +7,15 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { useChat } from "../hooks";
+import { useChat, useLandingPage } from "../hooks";
 import { useSocketProvider } from "../providers";
 import { useParams } from "react-router-dom";
 import { Send } from "@mui/icons-material";
 
 export const Chat = () => {
   const { groupName } = useChat();
+  // todo:  refactor
+  const {userName } = useLandingPage()
   const [currMessage, setCurrMessage] = useState<string>("");
   const { socket, messages } = useSocketProvider();
   const { groupId } = useParams();
@@ -25,6 +27,8 @@ export const Chat = () => {
         groupId,
         message: currMessage,
         userId: userId,
+        time: Date.now(),
+        username: userName
       });
       socket.send(res);
       setCurrMessage("");
