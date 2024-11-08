@@ -1,6 +1,7 @@
 import {
   Box,
   Chip,
+  CircularProgress,
   Drawer,
   Pagination,
   Stack,
@@ -21,7 +22,7 @@ export const GroupDrawer = ({
 }: IGroupDrawerProps) => {
   const [userPage, setUserPage] = useState(1);
 
-  const getGroups = useQuery({
+  const getGroupsQuery = useQuery({
     queryKey: ["groups", { userPage, all: true }],
     queryFn: async () =>
       authAxios.get(`/api/group?all=true&limit=10&page=${userPage}`),
@@ -42,38 +43,43 @@ export const GroupDrawer = ({
     >
       <Stack p={4} alignSelf="center" width="100%" direction="column" gap={3}>
         <Typography variant="h4">Current Groups</Typography>
-
-        <Stack direction="column" gap={1} pl={2} overflow="auto">
-          {getGroups.data?.data.groups?.map((group) => {
-            if (!group) return null;
-            return (
-              <Box key={group.id}>
-                <GroupCard
-                  name={group.groupname}
-                  alreadyExist={group.isAlreadyAdded}
-                  action={() => {
-                    if (group.isAlreadyAdded) {
-                      navigate(`/home/${group.id}`, { replace: false });
-                      return;
-                    }
-                    addUserToGroup(group.id);
-                  }}
-                />
-              </Box>
-            );
-          })}
-        </Stack>
-        <Pagination
-          sx={{
-            ".MuiPaginationItem-root": {
-              color: "#fff",
-            },
-          }}
-          page={userPage}
-          onChange={(_, page) => setUserPage(page)}
-          color="primary"
-          count={Math.ceil(getGroups.data?.data.total / 5)}
-        />
+        {getGroupsQuery.isLoading ? (
+          <CircularProgress sx={{ alignSelf: "center" }} />
+        ) : (
+          <>
+            <Stack direction="column" gap={1} pl={2} overflow="auto">
+              {getGroupsQuery.data?.data.groups?.map((group) => {
+                if (!group) return null;
+                return (
+                  <Box key={group.id}>
+                    <GroupCard
+                      name={group.groupname}
+                      alreadyExist={group.isAlreadyAdded}
+                      action={() => {
+                        if (group.isAlreadyAdded) {
+                          navigate(`/home/${group.id}`, { replace: false });
+                          return;
+                        }
+                        addUserToGroup(group.id);
+                      }}
+                    />
+                  </Box>
+                );
+              })}
+            </Stack>
+            <Pagination
+              sx={{
+                ".MuiPaginationItem-root": {
+                  color: "#fff",
+                },
+              }}
+              page={userPage}
+              onChange={(_, page) => setUserPage(page)}
+              color="primary"
+              count={Math.ceil(getGroupsQuery.data?.data.total / 5)}
+            />
+          </>
+        )}
       </Stack>
     </Drawer>
   );

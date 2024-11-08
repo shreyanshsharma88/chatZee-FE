@@ -1,6 +1,7 @@
 import { Add, Chat } from "@mui/icons-material";
 import {
   Box,
+  CircularProgress,
   Divider,
   Fab,
   IconButton,
@@ -20,8 +21,8 @@ import { IAddGroupProps } from "../../utils";
 import catAnimation from "../../../public/animations/cat-animation.json";
 import dogAnimation from "../../../public/animations/dog-animation.json";
 import pigeonAnimation from "../../../public/animations/pigeon-animation.json";
-import cowAnimation from "../../../public/animations/cow-animation.json"
-import someAnimalAnimation from "../../../public/animations/someAnimal-animation.json"
+import cowAnimation from "../../../public/animations/cow-animation.json";
+import someAnimalAnimation from "../../../public/animations/someAnimal-animation.json";
 
 import Lottie from "lottie-react";
 
@@ -51,9 +52,15 @@ export const SideBar = ({
   });
 
   const randomAnimation = useMemo(() => {
-    const animations = [catAnimation, dogAnimation, pigeonAnimation, cowAnimation, someAnimalAnimation];
+    const animations = [
+      catAnimation,
+      dogAnimation,
+      pigeonAnimation,
+      cowAnimation,
+      someAnimalAnimation,
+    ];
     return animations[Math.floor(Math.random() * animations.length)];
-  }, [catAnimation, dogAnimation, pigeonAnimation])
+  }, [catAnimation, dogAnimation, pigeonAnimation]);
 
   const [searchParam, setSearchParams] = useSearchParams();
   const handleOpenAddGroupDialog = () => {
@@ -109,45 +116,54 @@ export const SideBar = ({
       <Typography variant="h4" fontWeight={700}>
         My Groups
       </Typography>
-      {Number(getUserGroups.data?.data.total) > 4 && (
-        <Pagination
-          sx={{
-            ".MuiPaginationItem-root": {
-              color: "#fff",
-            },
-          }}
-          page={groupPage}
-          onChange={(_, page) => setGroupPage(page)}
-          color="primary"
-          count={Math.ceil(getUserGroups.data?.data.total / 5)}
-        />
-      )}
-      {getUserGroups.data?.data.groups.length > 0 ? (
-        <Stack direction="column" gap={1} pl={2} overflow="auto">
-          {getUserGroups.data?.data.groups?.map((group) => {
-            if (!group) return null;
-            return (
-              <Box key={group.id}>
-                <GroupCard
-                  name={group.groupname}
-                  alreadyExist={group.isAlreadyAdded}
-                  action={() => {
-                    if (group.isAlreadyAdded) {
-                      navigate(`/home/${group.id}`, { replace: false });
-                      return;
-                    }
-                    addUserToGroup(group.id);
-                  }}
-                />
-              </Box>
-            );
-          })}
-        </Stack>
-      ) : (
-        <Typography variant="h6">
-          You are not added in any groups yet...
-        </Typography>
-      )}
+
+      <>
+        {getUserGroups.isLoading ? (
+          <CircularProgress sx={{alignSelf: 'center'}} />
+        ) : (
+          <>
+            {Number(getUserGroups.data?.data.total) > 4 && (
+              <Pagination
+                sx={{
+                  ".MuiPaginationItem-root": {
+                    color: "#fff",
+                  },
+                }}
+                page={groupPage}
+                onChange={(_, page) => setGroupPage(page)}
+                color="primary"
+                count={Math.ceil(getUserGroups.data?.data.total / 5)}
+              />
+            )}
+            {getUserGroups.data?.data.groups.length > 0 ? (
+              <Stack direction="column" gap={1} pl={2} overflow="auto">
+                {getUserGroups.data?.data.groups?.map((group) => {
+                  if (!group) return null;
+                  return (
+                    <Box key={group.id}>
+                      <GroupCard
+                        name={group.groupname}
+                        alreadyExist={group.isAlreadyAdded}
+                        action={() => {
+                          if (group.isAlreadyAdded) {
+                            navigate(`/home/${group.id}`, { replace: false });
+                            return;
+                          }
+                          addUserToGroup(group.id);
+                        }}
+                      />
+                    </Box>
+                  );
+                })}
+              </Stack>
+            ) : (
+              <Typography variant="h6">
+                You are not added in any groups yet...
+              </Typography>
+            )}
+          </>
+        )}
+      </>
     </Stack>
   );
 };

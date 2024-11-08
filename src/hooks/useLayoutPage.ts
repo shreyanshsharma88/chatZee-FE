@@ -3,9 +3,11 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { authAxios } from "../http/axiosConfig";
 import { ICurrentUsers } from "../utils";
+import { AxiosError } from "axios";
 
 export const useLandingPage = () => {
   const { userId } = useParams();
+  const navigate = useNavigate();
 
   const queryClient = useQueryClient();
 
@@ -21,13 +23,28 @@ export const useLandingPage = () => {
       type: "GROUP" | "INDIVIDUAL";
       users?: string[];
     }) => authAxios.post(`/api/group`, data),
-    onSuccess: () => {
+    onSuccess: async (data, { type }) => {
+      if (type === "INDIVIDUAL") {
+        navigate(`/home/${data.data.id}`);
+        await queryClient.invalidateQueries({
+          exact: false,
+          refetchType: "active",
+          queryKey: ["users", "all"],
+        });
+
+        return;
+      }
       queryClient.invalidateQueries({
         exact: false,
         queryKey: ["groups"],
         refetchType: "active",
-      })
+      });
     },
+    onError: (err: AxiosError, {type}) => {
+      if(type === "INDIVIDUAL"){
+        navigate(`/home/${(err.response?.data as any).id}`);
+      }
+    }
   });
   const addGroup = ({
     groupName,
@@ -55,7 +72,7 @@ export const useLandingPage = () => {
       { groupId },
       {
         onSuccess: async () => {
-         await queryClient.invalidateQueries({
+          await queryClient.invalidateQueries({
             queryKey: ["groups", { all: false }],
             exact: true,
             refetchType: "active",

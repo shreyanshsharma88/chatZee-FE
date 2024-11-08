@@ -1,5 +1,6 @@
 import {
   Chip,
+  CircularProgress,
   Drawer,
   Pagination,
   Stack,
@@ -20,7 +21,7 @@ export const UserDrawer = ({
   const [debouncedSearchValue, setDebouncedSearchValue] = useState("");
   const [userPage, setUserPage] = useState(1);
 
-  const getUsers = useQuery({
+  const getUsersQuery = useQuery({
     queryKey: ["users", "all", { userPage, search: debouncedSearchValue }],
     queryFn: async () =>
       authAxios.get(
@@ -49,52 +50,57 @@ export const UserDrawer = ({
         },
       }}
     >
-      <Stack p={4} alignSelf="center" width="100%" direction="column" gap={3}>
-        <Typography variant="h4">Current Users</Typography>
-        <TextField
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          label="Search Users"
-        />
+      {getUsersQuery.isLoading ? (
+        <CircularProgress sx={{ alignSelf: "center" }} />
+      ) : (
+        <Stack p={4} alignSelf="center" width="100%" direction="column" gap={3}>
+          <Typography variant="h4">Current Users</Typography>
+          <TextField
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            label="Search Users"
+          />
 
-        <Stack direction="column" gap={1} pl={2}>
-          {getUsers.data?.data.users?.map((user) => {
-            if (!user) return null;
-            return (
-              <Chip
-                label={user.userName}
-                key={user.id}
-                color="info"
-                onClick={() =>
-                  handleUserClick({
-                    isDmExisting: user.alreadyAddedInDm,
-                    groupId: user.dmId,
-                    userId: user.id,
-                  })
-                }
-                sx={{
-                  p: 2.5,
-                  transition: "transform 0.3s ease",
-                  "&:hover": {
-                    transform: "scale(1.1)",
-                  },
-                }}
-              />
-            );
-          })}
+          <Stack direction="column" gap={1} pl={2}>
+            {getUsersQuery.data?.data.users?.map((user) => {
+              if (!user) return null;
+              return (
+                <Chip
+                  label={user.userName}
+                  key={user.id}
+                  color="info"
+                  onClick={() => {
+                    handleUserClick({
+                      isDmExisting: user.alreadyAddedInDm,
+                      groupId: user.dmId,
+                      userId: user.id,
+                    });
+                    onClose();
+                  }}
+                  sx={{
+                    p: 2.5,
+                    transition: "transform 0.3s ease",
+                    "&:hover": {
+                      transform: "scale(1.1)",
+                    },
+                  }}
+                />
+              );
+            })}
+          </Stack>
+          <Pagination
+            sx={{
+              ".MuiPaginationItem-root": {
+                color: "#fff",
+              },
+            }}
+            page={userPage}
+            onChange={(_, page) => setUserPage(page)}
+            color="primary"
+            count={Math.ceil(getUsersQuery.data?.data.total / 5)}
+          />
         </Stack>
-        <Pagination
-          sx={{
-            ".MuiPaginationItem-root": {
-              color: "#fff",
-            },
-          }}
-          page={userPage}
-          onChange={(_, page) => setUserPage(page)}
-          color="primary"
-          count={Math.ceil(getUsers.data?.data.total / 5)}
-        />
-      </Stack>
+      )}
     </Drawer>
   );
 };
