@@ -50,9 +50,10 @@ export const SocketProvider = () => {
       
     };
     const onClose = () => {
-      console.log("WebSocket is closed now");
-      ws = new WebSocket(`${SOCKET_URL}?userId=${token}`);
-      setSocket(ws);
+      console.warn("WebSocket is closed now");
+      setTimeout(() => {
+        setSocket(new WebSocket(`${SOCKET_URL}?userId=${token}`));
+      }, 3000);
     };
     setSocket(ws);
     ws.addEventListener("open", onSocketOpen);
@@ -60,6 +61,15 @@ export const SocketProvider = () => {
     ws.addEventListener("close", onClose);
     // ws.on;
   }, [token, groupId]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (socket?.readyState === WebSocket.OPEN) {
+        socket?.send(JSON.stringify({ type: "ping" }));
+      }
+    }, 10000); // Every 10 seconds
+    return () => clearInterval(intervalId);
+  }, [socket]);
   const value = useMemo(
     () => ({
       messages,
